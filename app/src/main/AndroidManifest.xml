@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.microjobbd">
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+        <activity android:name=".activity.LocationCheckActivity"></activity>
+        <activity android:name=".worker.workerscategory.ElectricianActivity" />
+        <activity android:name=".worker.WorkerMainActivity" />
+        <activity android:name=".user.UserMainActivity" />
+        <activity android:name=".worker.workerscategory.CleanerActivity" />
+        <activity android:name=".worker.workerscategory.BuaActivity" />
+        <activity android:name=".activity.SetupProfileActivity" />
+        <activity android:name=".activity.PhoneNumberVerifyActivity" />
+        <activity android:name=".activity.PhoneNumberActivity" />
+        <activity android:name=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyDPci6XtzK5LMbXvILYVQNj8CPI7qUArdg" />
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="Tvr01" />
+    </application>
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
+
+</manifest>

@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">Micro Job bd</string>
+    <string name="selectgender">Select Gender</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string-array name="usertype">
+        <item>Select</item>
+        <item>User</item>
+        <item>Worker</item>
+    </string-array>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string-array name="gender">
+        <item>Male</item>
+        <item>Female</item>
+    </string-array>
+
+</resources>

@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "477818964638",
+    "firebase_url": "https://micro-job-bd.firebaseio.com",
+    "project_id": "micro-job-bd",
+    "storage_bucket": "micro-job-bd.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:477818964638:android:0a4a9291cc41e778cbc98f",
+        "android_client_info": {
+          "package_name": "com.example.microjobbd"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "477818964638-ddttie43euqut9dhi2o43fvhbrhhbt9m.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.microjobbd",
+            "certificate_hash": "4c13cf74c6a24c825c46b43cf40c809623abc866"
+          }
+        },
+        {
+          "client_id": "477818964638-m13arrs7i8p4dobfht8cv3rtl2e65gs0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDDeCq-FxU9TeiMwtvMq_6ZwCmQdtRbs90"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "477818964638-m13arrs7i8p4dobfht8cv3rtl2e65gs0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
