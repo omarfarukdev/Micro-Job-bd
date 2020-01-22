@@ -19,15 +19,16 @@
 
     <ImageView
         android:id="@+id/imageView"
-        android:layout_width="125dp"
-        android:layout_height="125dp"
-        android:src="@drawable/profilr"
+        android:layout_width="match_parent"
+        android:layout_height="160dp"
+        android:onClick="uploadImage1"
+        android:src="@drawable/addimage"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.541"
+        app:layout_constraintHorizontal_bias="0.531"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/toolbar"
-        app:layout_constraintVertical_bias="0.061" />
+        app:layout_constraintVertical_bias="0.014" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/textInputLayout"
@@ -35,7 +36,7 @@
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageView"
-        app:layout_constraintVertical_bias="0.069"
+        app:layout_constraintVertical_bias="0.00999999"
         tools:layout_editor_absoluteX="-16dp">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -74,7 +75,8 @@
             android:id="@+id/userNIDNoEt"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Enter your NID number" />
+            android:hint="Enter your NID number"
+            android:inputType="number"/>
     </com.google.android.material.textfield.TextInputLayout>
 
     <LinearLayout
@@ -164,7 +166,7 @@
         android:text="Next"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout1"
-        app:layout_constraintVertical_bias="0.777"
-        tools:layout_editor_absoluteX="8dp" />
+        app:layout_constraintVertical_bias="0.212"
+        tools:layout_editor_absoluteX="0dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

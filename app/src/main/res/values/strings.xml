@@ -15,4 +15,10 @@
         <item>Female</item>
     </string-array>
 
+    <string-array name="workertype">
+        <item>Select</item>
+        <item>Electrician</item>
+        <item>Cleaner</item>
+        <item>Bua</item>
+    </string-array>
 </resources>

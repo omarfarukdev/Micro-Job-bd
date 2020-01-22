@@ -1,111 +1,177 @@
 package com.example.microjobbd.fragment;
 
-import android.content.Context;
-import android.net.Uri;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.location.Location;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ListView;
 
 import com.example.microjobbd.R;
+import com.example.microjobbd.adapter.WorkerListAdapter;
+import com.example.microjobbd.models.WorkerInformation;
+import com.example.microjobbd.worker.WorkerDetailsActivity;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link ListFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link ListFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+import java.util.ArrayList;
+
+import static android.content.Context.MODE_PRIVATE;
+
+
 public class ListFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-   // private OnFragmentInteractionListener mListener;
+    private DatabaseReference databaseReference,databaseReference2;
+    ArrayList<WorkerInformation> workerlist;
+    private WorkerListAdapter workerListAdapter;
+    ListView listView;
+    String loadedString,lati,longt,workerphno;
+    float distance;
 
     public ListFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment ListFragment.
-     */
- /*   // TODO: Rename and change types and number of parameters
-    public static ListFragment newInstance(String param1, String param2) {
-        ListFragment fragment = new ListFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    }
-*/
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_list, container, false);
-    }
+        View view= inflater.inflate(R.layout.fragment_list, container, false);
+       // View view1 = inflater.inflate(R.layout.activity_cleaner, container, false);
+        /*LinearLayout linearLayout = view1.findViewById(R.id.cleanerActivity);
+        if (linearLayout.getVisibility() == View.VISIBLE){
+            Log.d("vvvv","true");
+        }*/
 
-    /*// TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
+        listView=view.findViewById(R.id.workerlist);
+        workerlist=new ArrayList<>();
+        workerListAdapter=new WorkerListAdapter(getActivity(),0,workerlist);
+
+        SharedPreferences prefs = getContext().getSharedPreferences("OMAR", MODE_PRIVATE);
+        loadedString = prefs.getString("cleaner", null);
+        Log.d("List",""+loadedString);
+        Log.d("slsk",""+ FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber());
+
+        try {
+             databaseReference2 = FirebaseDatabase.getInstance().getReference().child("User").child(FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber());
+            databaseReference2.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    for (DataSnapshot d:dataSnapshot.getChildren()){
+                        if(d.getKey().equals("Latitude")){
+                            lati=d.getValue().toString();
+                        }
+                        if (d.getKey().equals("Longitude")){
+                            longt=d.getValue().toString();
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
         }
-    }
+        catch (Exception ex){
 
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
         }
+
+        databaseReference= FirebaseDatabase.getInstance().getReference().child("Worker");
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot d:dataSnapshot.getChildren()){
+
+                    Location mylocation = new Location("locationA");
+                    Location dest_location = new Location("locationA");
+                    //allWorker(d.getKey());
+
+                    Log.d("Num",""+d.child("Address").getValue().toString());
+                    Log.d("Type",""+d.child("Worker Type").getValue().toString());
+                    if (d.child("Worker Type").getValue().toString().equals(loadedString.trim())&&d.child("Verification").getValue().toString().equals("Yes")){
+                        workerphno=d.getKey();
+                        Log.d("WorkerNum",""+workerphno);
+                        //workerphno=d.getKey();
+                        dest_location.setLatitude(Double.parseDouble(d.child("Latitude").getValue().toString()));
+                        dest_location.setLongitude(Double.parseDouble(d.child("Longitude").getValue().toString()));
+                        mylocation.setLatitude(Double.parseDouble(lati));
+                        mylocation.setLongitude(Double.parseDouble(longt));
+
+                        distance = mylocation.distanceTo(dest_location);
+                       // String dist=Float.toString(distance/1000)+" k Way";
+                        String dist=String.format("%.2f k Way",distance/1000);
+                        if (distance/1000<=5) {
+                            WorkerInformation workerInformation = new WorkerInformation(d.child("Full Name").getValue().toString(), dist, workerphno);
+                            workerlist.add(workerInformation);
+                            listView.setAdapter(workerListAdapter);
+                            workerListAdapter.notifyDataSetChanged();
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                Intent intent=new Intent(getActivity(), WorkerDetailsActivity.class);
+                intent.putExtra("WorkerNumber",workerlist.get(position).getWorkerNum());
+                startActivity(intent);
+            }
+        });
+
+        return view;
     }
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
+    public void allWorker(String worker){
+
+        databaseReference2=FirebaseDatabase.getInstance().getReference().child("Worker").child(worker);
+        Log.d("slsk",""+ FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber());
+        databaseReference2.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot d:dataSnapshot.getChildren()){
+                  //Log.d("Type",""+d.child("Worker Type").getValue().toString());
+                    try {
+                        Log.d("Worker",""+d.child("Worker Type").getValue().toString());
+                        Log.d("Liss",""+loadedString);
+                        if (d.child("Worker Type").getValue().toString().equals(loadedString.trim())){
+                            WorkerInformation workerInformation=new WorkerInformation(d.child("Full Name").getValue().toString(),d.child("Full address").getValue().toString(),workerphno);
+                            workerlist.add(workerInformation);
+                            listView.setAdapter(workerListAdapter);
+                            workerListAdapter.notifyDataSetChanged();
+                        }
+                    }
+                    catch (Exception e){
+
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
     }
 
-    *//**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     *//*
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
-    }*/
 }

@@ -1,111 +1,110 @@
 package com.example.microjobbd.fragment.userfragments;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ListView;
 
 import com.example.microjobbd.R;
+import com.example.microjobbd.adapter.UserNotificationListAdapter;
+import com.example.microjobbd.models.UserNotificationInfo;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link UserNotificationFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link UserNotificationFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+import java.util.ArrayList;
+
+import static com.example.microjobbd.R.color.colorPrimaryDark;
+
+
 public class UserNotificationFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    //private OnFragmentInteractionListener mListener;
+    DatabaseReference databaseReference,databaseReference1;
+    ListView listView;
+    private UserNotificationListAdapter userNotificationListAdapter;
+    private ArrayList<UserNotificationInfo> arrayList;
+    String currentUser;
 
     public UserNotificationFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment UserNotificationFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-   /* public static UserNotificationFragment newInstance(String param1, String param2) {
-        UserNotificationFragment fragment = new UserNotificationFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    }
-*/
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_user_notification, container, false);
-    }
+        View view= inflater.inflate(R.layout.fragment_user_notification, container, false);
 
-    // TODO: Rename method, update argument and hook method into UI event
-   /* public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
+        listView=view.findViewById(R.id.notificationlist);
+        arrayList=new ArrayList<>();
+        userNotificationListAdapter=new UserNotificationListAdapter(getActivity(),0,arrayList);
+
+        try {
+            currentUser= FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber();
+            databaseReference= FirebaseDatabase.getInstance().getReference().child("Request Status").child(currentUser);
+            databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                @SuppressLint("ResourceAsColor")
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    for (DataSnapshot d:dataSnapshot.getChildren()) {
+                            UserNotificationInfo userNotificationInfo=new UserNotificationInfo(d.child("Worker Name").getValue().toString(),d.child("Worker Phone No").getValue().toString(),d.child("Request Status").getValue().toString(),d.child("Time").getValue().toString(),d.child("Worker Image").getValue().toString(),d.getKey(),d.child("Is Seen").getValue().toString());
+                            arrayList.add(userNotificationInfo);
+                            listView.setAdapter(userNotificationListAdapter);
+                            userNotificationListAdapter.notifyDataSetChanged();
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+
+
+        }catch (Exception e){
+
         }
-    }
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @SuppressLint("ResourceAsColor")
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
+                if (arrayList.get(position).getStatus().equals("Denied")&&arrayList.get(position).getIsSeen().equals("False")){
+                    listView.setSelection(R.color. colorAccent ) ;
+                    databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            for (DataSnapshot d:dataSnapshot.getChildren()) {
+                                if (d.getKey().equals(arrayList.get(position).getKey())) {
+                                    databaseReference1=databaseReference.child(d.getKey());
+                                    databaseReference1.child("Is Seen").setValue("True");
+                                }
+                            }
+                        }
 
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    }
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
+                        }
+                    });
+                }
+            }
+        });
 
-    *//**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     *//*
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
-    }*/
+
+        return view;
+    }
 }

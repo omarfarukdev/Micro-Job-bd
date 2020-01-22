@@ -4,7 +4,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.viewpager.widget.ViewPager;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 import com.example.microjobbd.R;
@@ -43,7 +45,10 @@ public class ElectricianActivity extends AppCompatActivity {
         adapter.AddFragment(new ListFragment(),"List View");
 
         viewPager.setAdapter(adapter);
-
         tabLayout.setupWithViewPager(viewPager);
+
+        SharedPreferences.Editor editor = this.getSharedPreferences("OMAR", MODE_PRIVATE).edit();
+        editor.putString("cleaner", "Electrician");
+        editor.apply();
     }
 }

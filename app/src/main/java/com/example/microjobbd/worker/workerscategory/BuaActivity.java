@@ -4,7 +4,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.viewpager.widget.ViewPager;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 import com.example.microjobbd.R;
@@ -34,6 +36,10 @@ public class BuaActivity extends AppCompatActivity {
                 finish();
             }
         });
+
+        SharedPreferences.Editor editor = this.getSharedPreferences("OMAR", MODE_PRIVATE).edit();
+        editor.putString("cleaner", "Bua");
+        editor.apply();
 
         tabLayout= (TabLayout) findViewById(R.id.tablayout);
         viewPager= (ViewPager) findViewById(R.id.viewpager);

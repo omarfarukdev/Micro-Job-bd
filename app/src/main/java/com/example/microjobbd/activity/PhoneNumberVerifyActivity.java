@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.microjobbd.R;
@@ -43,6 +44,7 @@ public class PhoneNumberVerifyActivity extends AppCompatActivity {
     ProgressDialog progressDialog;
     EditText editText;
     Button worker,user;
+    TextView phone,phone1;
     ConstraintLayout constraintLayout;
 
     @Override
@@ -52,12 +54,16 @@ public class PhoneNumberVerifyActivity extends AppCompatActivity {
 
         mAuth=FirebaseAuth.getInstance();
         editText=findViewById(R.id.codeEt);
+        phone=findViewById(R.id.textView3);
+        phone1=findViewById(R.id.textView4);
         constraintLayout=findViewById(R.id.constrainLayout);
         progressDialog=new ProgressDialog(this,R.style.AppCompatAlertDialogStyle);
         progressDialog.setMessage("Please wait");
 
         String phonenumber=getIntent().getStringExtra("phonenumber");
         sendVerificationCode(phonenumber);
+        phone.setText("Veriy "+phonenumber);
+        phone1.setText("Waiting to detect an verification code from "+phonenumber+" phone number.");
     }
 
     private void sendVerificationCode(String number){
@@ -145,7 +151,7 @@ public class PhoneNumberVerifyActivity extends AppCompatActivity {
                                     FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
                                         @Override
                                         public void onSuccess(InstanceIdResult instanceIdResult) {
-                                            databaseReference.child("Token id").setValue(instanceIdResult.getToken());
+                                            //databaseReference.child("Token id").setValue(instanceIdResult.getToken());
                                         }
                                     });
                                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -155,11 +161,11 @@ public class PhoneNumberVerifyActivity extends AppCompatActivity {
                                 }
                                 else{
                                     Intent intent = new Intent(PhoneNumberVerifyActivity.this,SetupProfileActivity.class);
-                                    databaseReference.child("User id").setValue(task.getResult().getUser().getUid());
+                                   // databaseReference.child("User id").setValue(task.getResult().getUser().getUid());
                                     FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
                                         @Override
                                         public void onSuccess(InstanceIdResult instanceIdResult) {
-                                            databaseReference.child("Token id").setValue(instanceIdResult.getToken());
+                                           // databaseReference.child("Token id").setValue(instanceIdResult.getToken());
                                         }
                                     });
                                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -201,7 +207,7 @@ public class PhoneNumberVerifyActivity extends AppCompatActivity {
                         FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
                             @Override
                             public void onSuccess(InstanceIdResult instanceIdResult) {
-                                databaseReference.child("Token id").setValue(instanceIdResult.getToken());
+                               // databaseReference.child("Token id").setValue(instanceIdResult.getToken());
                             }
                         });
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -211,11 +217,11 @@ public class PhoneNumberVerifyActivity extends AppCompatActivity {
                     }
                     else{
                         Intent intent = new Intent(PhoneNumberVerifyActivity.this,SetupProfileActivity.class);
-                        databaseReference.child("User id").setValue(task.getResult().getUser().getUid());
+                        //databaseReference.child("User id").setValue(task.getResult().getUser().getUid());
                         FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
                             @Override
                             public void onSuccess(InstanceIdResult instanceIdResult) {
-                                databaseReference.child("Token id").setValue(instanceIdResult.getToken());
+                               // databaseReference.child("Token id").setValue(instanceIdResult.getToken());
                             }
                         });
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -244,7 +250,7 @@ public class PhoneNumberVerifyActivity extends AppCompatActivity {
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.user_type_dialog);
         dialog.show();
-        worker=dialog.findViewById(R.id.worker);
+        /*worker=dialog.findViewById(R.id.worker);
         user=dialog.findViewById(R.id.user);
         worker.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -307,6 +313,6 @@ public class PhoneNumberVerifyActivity extends AppCompatActivity {
                });
 
            }
-       });
+       });*/
     }
 }

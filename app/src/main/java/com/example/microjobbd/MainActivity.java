@@ -7,10 +7,15 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.View;
@@ -18,6 +23,7 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageButton;
 
+import com.example.microjobbd.activity.LocationCheckActivity;
 import com.example.microjobbd.activity.PhoneNumberActivity;
 import com.example.microjobbd.activity.SetupProfileActivity;
 import com.example.microjobbd.user.UserMainActivity;
@@ -39,11 +45,16 @@ public class MainActivity extends AppCompatActivity {
     ConstraintLayout linearLayout;
     FirebaseAuth auth;
     FirebaseUser firebaseUser;
+    SharedPreferences.Editor editor;
+    SharedPreferences sharedPreferences;
+    String verification;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        editor = sharedPreferences.edit();
     }
 
     protected void onStart(){
@@ -180,14 +191,24 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()){
+
+                    editor.putString("currentuser", "User");
+                    editor.apply();
                     int count = (int) dataSnapshot.getChildrenCount();
-                    if (count>=3 && linearLayout.getVisibility() == View.VISIBLE && dataSnapshot.hasChild("Full Name") && dataSnapshot.hasChild("Address")){
+                    if (!isLocationEnabled()){
+                        Intent intent=new Intent(MainActivity.this, LocationCheckActivity.class);
+                        intent.putExtra("key",1);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        finish();
+                        startActivity(intent);
+                    }
+                    else if (count>=3 && isLocationEnabled() && linearLayout.getVisibility() == View.VISIBLE && dataSnapshot.hasChild("Full Name") && dataSnapshot.hasChild("Address")){
                         Intent intent = new Intent(MainActivity.this, UserMainActivity.class);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
                             @Override
                             public void onSuccess(InstanceIdResult instanceIdResult) {
-                                databaseReference.child("Token id").setValue(instanceIdResult.getToken());
+                               // databaseReference.child("Token id").setValue(instanceIdResult.getToken());
 
                             }
                         });
@@ -195,7 +216,7 @@ public class MainActivity extends AppCompatActivity {
                         startActivity(intent);
 
                     }
-                    else if(linearLayout.getVisibility() == View.VISIBLE && !dataSnapshot.hasChild("Full Name") && !dataSnapshot.hasChild("Address")){
+                    else if(isLocationEnabled()&&linearLayout.getVisibility() == View.VISIBLE && !dataSnapshot.hasChild("Full Name") && !dataSnapshot.hasChild("Address")){
                         Intent intent = new Intent(MainActivity.this, SetupProfileActivity.class);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         finish();
@@ -229,20 +250,37 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void checkAdmin(){
-        databaseReference1 = FirebaseDatabase.getInstance().getReference().child("Admin").child(auth.getCurrentUser().getPhoneNumber());//current user references
+        databaseReference1 = FirebaseDatabase.getInstance().getReference().child("Worker").child(auth.getCurrentUser().getPhoneNumber());//current user references
         databaseReference1.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists()){
 
+                    editor.putString("currentuser", "Worker");
+                    editor.apply();
+
+                    for (DataSnapshot d:dataSnapshot.getChildren())
+                    {
+                        if (d.getKey().equals("Verification")){
+                            verification=d.getValue().toString();
+                        }
+                    }
                     int count = (int) dataSnapshot.getChildrenCount();
-                    if (count>=3 && linearLayout.getVisibility() == View.VISIBLE && dataSnapshot.hasChild("Full Name") && dataSnapshot.hasChild("Address")){
+                    if(verification.equals("Yes")){
+                    if (!isLocationEnabled()){
+                        Intent intent=new Intent(MainActivity.this, LocationCheckActivity.class);
+                        intent.putExtra("key",2);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        finish();
+                        startActivity(intent);
+                    }
+                    else if (count>=3 &&isLocationEnabled()&& linearLayout.getVisibility() == View.VISIBLE && dataSnapshot.hasChild("Full Name") && dataSnapshot.hasChild("Address")){
                         Intent intent = new Intent(MainActivity.this, WorkerMainActivity.class);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
                             @Override
                             public void onSuccess(InstanceIdResult instanceIdResult) {
-                                databaseReference1.child("Token id").setValue(instanceIdResult.getToken());
+                                //databaseReference1.child("Token id").setValue(instanceIdResult.getToken());
 
                             }
                         });
@@ -250,12 +288,32 @@ public class MainActivity extends AppCompatActivity {
                         startActivity(intent);
 
                     }
-                    else if(linearLayout.getVisibility() == View.VISIBLE && !dataSnapshot.hasChild("Full Name") && !dataSnapshot.hasChild("Address")){
+                    else if(isLocationEnabled()&&linearLayout.getVisibility() == View.VISIBLE && !dataSnapshot.hasChild("Full Name") && !dataSnapshot.hasChild("Address")){
                         Intent intent = new Intent(MainActivity.this, SetupProfileActivity.class);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         finish();
                         startActivity(intent);
                     }
+                    }
+                    else if (verification.equals("No")){
+                        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                        builder.setCancelable(false);
+                        builder.setMessage("Please Mett to Micro Job bd office"+"\n\n Verify Your Account");
+
+                        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                finish();
+                            }
+                        });
+                        builder.show();
+                    }
+                }
+                else {
+                    Intent intent = new Intent(MainActivity.this, SetupProfileActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    finish();
+                    startActivity(intent);
                 }
             }
 
@@ -264,5 +322,10 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+    }
+    private boolean isLocationEnabled() {
+        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
+                locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
     }
 }

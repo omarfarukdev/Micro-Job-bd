@@ -34,6 +34,8 @@ public class PhoneNumberActivity extends AppCompatActivity {
         String phnNumber="+880"+number;
         Intent intent=new Intent(PhoneNumberActivity.this,PhoneNumberVerifyActivity.class);
         intent.putExtra("phonenumber",phnNumber);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        finish();
         startActivity(intent);
     }
 }

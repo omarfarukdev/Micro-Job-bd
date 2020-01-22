@@ -9,7 +9,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
-        <activity android:name=".activity.LocationCheckActivity"></activity>
+        <activity android:name=".user.ConfirmActivity"></activity>
+        <activity android:name=".user.UserProfileUpdateActivity" />
+        <activity android:name=".worker.WorkerProfileUpdateActivity" />
+        <activity android:name=".worker.WorkerDetailsActivity" />
+        <activity android:name=".activity.LocationCheckActivity" />
         <activity android:name=".worker.workerscategory.ElectricianActivity" />
         <activity android:name=".worker.WorkerMainActivity" />
         <activity android:name=".user.UserMainActivity" />
@@ -28,15 +32,24 @@
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyDPci6XtzK5LMbXvILYVQNj8CPI7qUArdg" />
+            android:value="AIzaSyAxYhaWaSX0U7clu3kFZsYVziVBut9Gcw4" />
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
             android:value="Tvr01" />
+
+        <service
+            android:name=".service.LocationService"
+            android:enabled="true"
+            android:exported="true" />
     </application>
+    <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
 
     <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />

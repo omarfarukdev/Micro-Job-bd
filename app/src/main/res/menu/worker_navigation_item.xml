@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/worker_notification_nav"
+        android:icon="@drawable/notifi"
+        android:title="Notification" />
+    <item
+        android:id="@+id/worker_history"
+        android:icon="@drawable/history"
+        android:title="History" />
+    <item
+        android:id="@+id/worker_profile"
+        android:icon="@drawable/pro"
+        android:title="Profile" />
+
+</menu>
